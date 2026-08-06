@@ -31,6 +31,10 @@ jobs:
         run: |
           sudo apt-get install -y sshpass
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
+            ssh -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "mkdir -p /var/www/tareo-web"
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
             scp -o StrictHostKeyChecking=yes -r \
             dist nginx.conf.template docker-compose.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/tareo-web/
