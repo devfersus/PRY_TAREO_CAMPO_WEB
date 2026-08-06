@@ -1,0 +1,12 @@
+services:
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    environment:
+      - BACKEND_HOST=127.0.0.1
+      - BACKEND_PORT=5000

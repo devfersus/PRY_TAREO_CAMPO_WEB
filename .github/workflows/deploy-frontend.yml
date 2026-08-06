@@ -1,0 +1,42 @@
+name: Deploy Frontend to Contabo
+
+on:
+  push:
+    branches:
+      - migrations
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        run: npm install -g pnpm
+
+      - name: Install & Build
+        run: |
+          pnpm install
+          pnpm run build
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy files to server
+        run: |
+          sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
+            scp -o StrictHostKeyChecking=yes -r \
+            dist nginx.conf.template docker-compose.yml \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/tareo-web/
+
+      - name: Restart Docker container
+        run: |
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
+            ssh -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "cd /var/www/tareo-web && docker compose up -d"
