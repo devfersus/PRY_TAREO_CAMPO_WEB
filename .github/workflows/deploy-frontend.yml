@@ -24,7 +24,7 @@ jobs:
       - name: Add server to known_hosts
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -t ed25519 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
       - name: Deploy files to server
