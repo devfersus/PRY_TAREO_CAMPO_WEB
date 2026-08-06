@@ -38,6 +38,10 @@ jobs:
             scp -o StrictHostKeyChecking=yes -r \
             dist nginx.conf.template docker-compose.yml \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/tareo-web/
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
+            ssh -o StrictHostKeyChecking=yes \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
+            "echo 'BACKEND_HOST=${{ secrets.SERVER_HOST }}' > /var/www/tareo-web/.env"
 
       - name: Restart Docker container
         run: |

@@ -8,5 +8,5 @@ services:
       - "3000:80"
     restart: unless-stopped
     environment:
-      - BACKEND_HOST=127.0.0.1
+      - BACKEND_HOST=${BACKEND_HOST}
       - BACKEND_PORT=5000
