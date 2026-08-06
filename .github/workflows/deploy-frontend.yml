@@ -44,4 +44,4 @@ jobs:
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
             ssh -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "docker stop tareo_campo_web_frontend 2>/dev/null || true; docker rm tareo_campo_web_frontend 2>/dev/null || true; cd /var/www/tareo-web && docker-compose down && docker-compose up -d"
+            "docker stop tareo_campo_web_frontend_1 2>/dev/null || true; docker rm tareo_campo_web_frontend_1 2>/dev/null || true; cd /var/www/tareo-web && docker-compose down && docker-compose up -d"
