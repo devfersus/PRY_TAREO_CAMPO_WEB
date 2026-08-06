@@ -44,4 +44,4 @@ jobs:
           sshpass -p "${{ secrets.SERVER_PASSWORD }}" \
             ssh -o StrictHostKeyChecking=yes \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} \
-            "cd /var/www/tareo-web && docker compose up -d"
+            "cd /var/www/tareo-web && docker-compose up -d"
