@@ -6,7 +6,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { type IAccion } from '../interface/IAccion.interface';
 
 interface Props {
@@ -30,7 +33,13 @@ export const AccionLista = ({ acciones, onEditar, puedeEditar }: Props) => {
           {acciones.map((accion) => (
             <TableRow key={accion.id} hover>
               <TableCell>{accion.descripcion}</TableCell>
-              <TableCell>{accion.activo ? 'Sí' : 'No'}</TableCell>
+              <TableCell>
+                <Tooltip title={accion.activo ? 'Activo' : 'Inactivo'}>
+                  {accion.activo
+                    ? <CheckCircleIcon fontSize="small" color="success" />
+                    : <CancelIcon fontSize="small" color="error" />}
+                </Tooltip>
+              </TableCell>
               {puedeEditar && (
                 <TableCell align="center">
                   <IconButton size="small" color="primary" onClick={() => onEditar(accion)}>

@@ -6,7 +6,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { type ISubmoduloListar } from '../CasoUso/Listar/interface/ISubmoduloListar.interface';
 
 interface Props {
@@ -31,7 +34,13 @@ export const SubmoduloLista = ({ submodulos, onEditar, puedeEditar }: Props) => 
           {submodulos.map((submodulo) => (
             <TableRow key={submodulo.id} hover>
               <TableCell>{submodulo.descripcion}</TableCell>
-              <TableCell>{submodulo.activo ? 'Sí' : 'No'}</TableCell>
+              <TableCell>
+                <Tooltip title={submodulo.activo ? 'Activo' : 'Inactivo'}>
+                  {submodulo.activo
+                    ? <CheckCircleIcon fontSize="small" color="success" />
+                    : <CancelIcon fontSize="small" color="error" />}
+                </Tooltip>
+              </TableCell>
               {puedeEditar && (
                 <TableCell align="center">
                   <IconButton size="small" color="primary" onClick={() => onEditar(submodulo)}>

@@ -6,7 +6,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { type IModulo } from '../interface/IModulo.interface';
 
 interface Props {
@@ -30,7 +33,13 @@ export const ModuloLista = ({ modulos, onEditar, puedeEditar }: Props) => {
           {modulos.map((modulo) => (
             <TableRow key={modulo.id} hover>
               <TableCell>{modulo.descripcion}</TableCell>
-              <TableCell>{modulo.activo ? 'Sí' : 'No'}</TableCell>
+              <TableCell>
+                <Tooltip title={modulo.activo ? 'Activo' : 'Inactivo'}>
+                  {modulo.activo
+                    ? <CheckCircleIcon fontSize="small" color="success" />
+                    : <CancelIcon fontSize="small" color="error" />}
+                </Tooltip>
+              </TableCell>
               {puedeEditar && (
                 <TableCell align="center">
                   <IconButton size="small" color="primary" onClick={() => onEditar(modulo)}>

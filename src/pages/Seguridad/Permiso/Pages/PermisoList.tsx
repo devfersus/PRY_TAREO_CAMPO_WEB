@@ -6,8 +6,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import type { IPermiso } from '../interface/IPermiso.interface';
 
 interface Props {
@@ -49,7 +52,13 @@ export const PermisoLista = ({
               sx={{ cursor: 'pointer' }}
             >
               <TableCell>{permiso.descripcion}</TableCell>
-              <TableCell>{permiso.activo ? 'Sí' : 'No'}</TableCell>
+              <TableCell>
+                <Tooltip title={permiso.activo ? 'Activo' : 'Inactivo'}>
+                  {permiso.activo
+                    ? <CheckCircleIcon fontSize="small" color="success" />
+                    : <CancelIcon fontSize="small" color="error" />}
+                </Tooltip>
+              </TableCell>
               {(puedeEditar || puedeEliminar) && (
                 <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                   {puedeEditar && (
