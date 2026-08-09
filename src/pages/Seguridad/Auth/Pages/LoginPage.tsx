@@ -16,8 +16,8 @@ interface Props {
 export const LoginPage = ({ onLoginSuccess }: Props) => {
   const { login, isLoading, error } = useAuth();
 
-  const [email,      setEmail]      = useState('strin@gmail.com');
-  const [contraseña, setContraseña] = useState('string');
+  const [email,      setEmail]      = useState('');
+  const [contraseña, setContraseña] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
