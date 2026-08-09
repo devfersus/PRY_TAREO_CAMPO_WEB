@@ -7,6 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -16,9 +17,10 @@ interface Props {
   modulos: IModulo[];
   onEditar: (modulo: IModulo) => void;
   puedeEditar: boolean;
+  cargandoEditar?: boolean;
 }
 
-export const ModuloLista = ({ modulos, onEditar, puedeEditar }: Props) => {
+export const ModuloLista = ({ modulos, onEditar, puedeEditar, cargandoEditar }: Props) => {
   return (
     <TableContainer component={Paper} variant="outlined">
       <Table size="small">
@@ -42,8 +44,10 @@ export const ModuloLista = ({ modulos, onEditar, puedeEditar }: Props) => {
               </TableCell>
               {puedeEditar && (
                 <TableCell align="center">
-                  <IconButton size="small" color="primary" onClick={() => onEditar(modulo)}>
-                    <EditIcon fontSize="small" />
+                  <IconButton size="small" color="primary" disabled={cargandoEditar} onClick={() => onEditar(modulo)}>
+                    {cargandoEditar
+                      ? <CircularProgress size={14} color="inherit" />
+                      : <EditIcon fontSize="small" />}
                   </IconButton>
                 </TableCell>
               )}

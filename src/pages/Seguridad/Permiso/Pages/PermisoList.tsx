@@ -7,6 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -21,6 +22,7 @@ interface Props {
   onEliminar: (id: string) => void;
   puedeEditar: boolean;
   puedeEliminar: boolean;
+  cargandoEditar?: boolean;
 }
 
 export const PermisoLista = ({
@@ -31,6 +33,7 @@ export const PermisoLista = ({
   onEliminar,
   puedeEditar,
   puedeEliminar,
+  cargandoEditar,
 }: Props) => {
   return (
     <TableContainer component={Paper} variant="outlined">
@@ -62,8 +65,10 @@ export const PermisoLista = ({
               {(puedeEditar || puedeEliminar) && (
                 <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                   {puedeEditar && (
-                    <IconButton size="small" color="primary" title="Editar" onClick={() => onEditar(permiso)}>
-                      <EditIcon fontSize="small" />
+                    <IconButton size="small" color="primary" title="Editar" disabled={cargandoEditar} onClick={() => onEditar(permiso)}>
+                      {cargandoEditar
+                        ? <CircularProgress size={14} color="inherit" />
+                        : <EditIcon fontSize="small" />}
                     </IconButton>
                   )}
                   {puedeEliminar && (

@@ -4,7 +4,7 @@ import { permisoApi } from './PermisoApi';
 // Listar todos
 export const getPermisoAll = async (): Promise<IPermiso[]> => {
     try {
-        const res = await permisoApi.get('/');
+        const res = await permisoApi.get('/listar');
         return res.data;
     } catch (error) {
         console.error('Error al obtener los permisos:', error);
@@ -15,7 +15,7 @@ export const getPermisoAll = async (): Promise<IPermiso[]> => {
 // Obtener por ID
 export const getPermisoPorId = async (id: string): Promise<IPermiso> => {
     try {
-        const res = await permisoApi.get(`/${id}`);
+        const res = await permisoApi.get('/', { params: { id } });
         return res.data;
     } catch (error) {
         console.error('Error al obtener el permiso:', error);

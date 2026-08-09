@@ -46,7 +46,7 @@ export const getSubmoduloPorId = async (id: number): Promise<ISubmoduloListar> =
 export const getSubmoduloAll = async (): Promise<ISubmoduloListar[]> => {
     try {
         console.log("getSubmoduloAll peticion realizada");
-        const res = await submoduloApi.get('/');
+        const res = await submoduloApi.get('/listar');
         return res.data;
     } catch (error) {
         console.error("Error al obtener los submódulos:", error);

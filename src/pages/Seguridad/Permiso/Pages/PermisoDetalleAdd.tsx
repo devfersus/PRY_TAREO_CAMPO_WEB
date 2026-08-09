@@ -10,8 +10,11 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import type { AxiosError } from 'axios';
 import { getPermisoAcciones, getPermisoModulos, getPermisoSubmodulos } from '../api/getPermisos.action';
 import { createPermisoDetalle } from '../api/createPermisoDetalle.action';
 import { getPermisoDetalles } from '../api/getPermisoDetalles.action';
@@ -45,6 +48,7 @@ export const PermisoDetalleAdd = ({ permiso, onCancel }: Props) => {
   const [subModuloId, setSubModuloId] = useState<string>('');
   const [accionIds,   setAccionIds]   = useState<string[]>([]);
   const [isPending,   setIsPending]   = useState(false);
+  const [errorMsg,    setErrorMsg]    = useState<string | null>(null);
 
   const cargarDetalles = useCallback(async () => {
     const data = await getPermisoDetalles(permiso.id);
@@ -76,6 +80,9 @@ export const PermisoDetalleAdd = ({ permiso, onCancel }: Props) => {
       setSubModuloId('');
       setAccionIds([]);
       await cargarDetalles();
+    } catch (err) {
+      const axiosErr = err as AxiosError<{ detail?: string; message?: string }>;
+      setErrorMsg(axiosErr.response?.data?.detail ?? axiosErr.response?.data?.message ?? 'Error inesperado');
     } finally {
       setIsPending(false);
     }
@@ -105,6 +112,7 @@ export const PermisoDetalleAdd = ({ permiso, onCancel }: Props) => {
     .join(', ');
 
   return (
+    <>
     <Box sx={{ display: 'flex', gap: 2, pt: 1, minHeight: 380 }}>
       {/* ── Panel izquierdo: formulario agregar ── */}
       <Box
@@ -212,5 +220,17 @@ export const PermisoDetalleAdd = ({ permiso, onCancel }: Props) => {
         )}
       </Box>
     </Box>
+
+    <Snackbar
+      open={errorMsg !== null}
+      autoHideDuration={3000}
+      onClose={() => setErrorMsg(null)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert severity="error" variant="filled" onClose={() => setErrorMsg(null)}>
+        {errorMsg}
+      </Alert>
+    </Snackbar>
+    </>
   );
 };

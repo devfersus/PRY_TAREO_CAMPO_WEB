@@ -45,7 +45,7 @@ export const getModuloPorId = async (id: number): Promise<IModulo> => {
 export const getModuloAll = async (): Promise<IModulo[]> => {
     try {
         console.log("getModuloAll peticion realizada");
-        const res = await moduloApi.get('/');
+        const res = await moduloApi.get('/listar');
         return res.data;
     } catch (error) {
         console.error("Error al obtener los módulos:", error);

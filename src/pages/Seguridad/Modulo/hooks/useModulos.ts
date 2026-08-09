@@ -25,12 +25,23 @@ export const useModulos = (getModulo: Promise<IModulo[]>) => {
   // --- Popup editar ---
   const [moduloSeleccionado, setModuloSeleccionado] = useState<IModulo | null>(null);
   const [popupEditarVisible, setPopupEditarVisible] = useState(false);
+  const [cargandoEditar,     setCargandoEditar]     = useState(false);
+  const [errorEditar,        setErrorEditar]        = useState<string | null>(null);
 
   const onEditar = async (modulo: IModulo) => {
-    const moduloActualizado = await getModuloPorId(modulo.id);
-    setModuloSeleccionado(moduloActualizado);
-    setPopupEditarVisible(true);
+    setCargandoEditar(true);
+    setErrorEditar(null);
+    try {
+      const moduloActualizado = await getModuloPorId(modulo.id);
+      setModuloSeleccionado(moduloActualizado);
+      setPopupEditarVisible(true);
+    } catch {
+      setErrorEditar('No se pudo cargar el módulo para editar.');
+    } finally {
+      setCargandoEditar(false);
+    }
   };
+
   const cerrarPopupEditar = () => setPopupEditarVisible(false);
 
   const onModuloActualizado = async (_actualizado: IModulo) => {
@@ -54,6 +65,9 @@ export const useModulos = (getModulo: Promise<IModulo[]>) => {
       cerrar:       cerrarPopupEditar,
       seleccionado: moduloSeleccionado,
       onGuardar:    onModuloActualizado,
+      cargando:     cargandoEditar,
+      error:        errorEditar,
+      cerrarError:  () => setErrorEditar(null),
     },
   };
 };

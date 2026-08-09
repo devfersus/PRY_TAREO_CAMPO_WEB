@@ -24,12 +24,22 @@ export const usePermisos = (getPermiso: Promise<IPermiso[]>) => {
 
     // --- Popup editar ---
     const [permisoSeleccionado, setPermisoSeleccionado] = useState<IPermiso | null>(null);
-    const [popupEditarVisible, setPopupEditarVisible] = useState(false);
+    const [popupEditarVisible,  setPopupEditarVisible]  = useState(false);
+    const [cargandoEditar,      setCargandoEditar]      = useState(false);
+    const [errorEditar,         setErrorEditar]         = useState<string | null>(null);
 
     const onEditar = async (permiso: IPermiso) => {
-        const permisoActualizado = await getPermisoPorId(permiso.id);
-        setPermisoSeleccionado(permisoActualizado);
-        setPopupEditarVisible(true);
+        setCargandoEditar(true);
+        setErrorEditar(null);
+        try {
+            const permisoActualizado = await getPermisoPorId(permiso.id);
+            setPermisoSeleccionado(permisoActualizado);
+            setPopupEditarVisible(true);
+        } catch {
+            setErrorEditar('No se pudo cargar el permiso para editar.');
+        } finally {
+            setCargandoEditar(false);
+        }
     };
 
     const cerrarPopupEditar = () => setPopupEditarVisible(false);
@@ -96,6 +106,9 @@ export const usePermisos = (getPermiso: Promise<IPermiso[]>) => {
             cerrar:       cerrarPopupEditar,
             seleccionado: permisoSeleccionado,
             onGuardar:    onPermisoActualizado,
+            cargando:     cargandoEditar,
+            error:        errorEditar,
+            cerrarError:  () => setErrorEditar(null),
         },
         popupDetalle: {
             visible:         popupDetalleVisible,

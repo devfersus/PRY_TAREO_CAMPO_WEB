@@ -2,7 +2,7 @@ import { useActionState, useState } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import { updatePermisoForm } from '../api/updatePermiso.action';
 import type { IPermiso } from '../interface/IPermiso.interface';
@@ -39,7 +39,7 @@ export const PermisoEdit = ({ permiso, onActualizar, onCancel }: Props) => {
 
       <FormControlLabel
         control={
-          <Switch
+          <Checkbox
             checked={activo}
             onChange={(e) => setActivo(e.target.checked)}
             color="success"

@@ -24,13 +24,24 @@ export const useSubmodulos = (getSubmodulo: Promise<ISubmoduloListar[]>) => {
 
   // --- Popup editar ---
   const [submoduloSeleccionado, setSubmoduloSeleccionado] = useState<ISubmoduloListar | null>(null);
-  const [popupEditarVisible, setPopupEditarVisible] = useState(false);
+  const [popupEditarVisible,    setPopupEditarVisible]    = useState(false);
+  const [cargandoEditar,        setCargandoEditar]        = useState(false);
+  const [errorEditar,           setErrorEditar]           = useState<string | null>(null);
 
   const onEditar = async (submodulo: ISubmoduloListar) => {
-    const submoduloActualizado = await getSubmoduloPorId(submodulo.id);
-    setSubmoduloSeleccionado(submoduloActualizado);
-    setPopupEditarVisible(true);
+    setCargandoEditar(true);
+    setErrorEditar(null);
+    try {
+      const actualizado = await getSubmoduloPorId(submodulo.id);
+      setSubmoduloSeleccionado(actualizado);
+      setPopupEditarVisible(true);
+    } catch {
+      setErrorEditar('No se pudo cargar el submódulo para editar.');
+    } finally {
+      setCargandoEditar(false);
+    }
   };
+
   const cerrarPopupEditar = () => setPopupEditarVisible(false);
 
   const onSubmoduloActualizado = async (_actualizado: ISubmoduloListar) => {
@@ -54,6 +65,9 @@ export const useSubmodulos = (getSubmodulo: Promise<ISubmoduloListar[]>) => {
       cerrar:       cerrarPopupEditar,
       seleccionado: submoduloSeleccionado,
       onGuardar:    onSubmoduloActualizado,
+      cargando:     cargandoEditar,
+      error:        errorEditar,
+      cerrarError:  () => setErrorEditar(null),
     },
   };
 };

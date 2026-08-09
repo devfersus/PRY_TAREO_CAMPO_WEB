@@ -7,6 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -16,15 +17,15 @@ interface Props {
   submodulos: ISubmoduloListar[];
   onEditar: (submodulo: ISubmoduloListar) => void;
   puedeEditar: boolean;
+  cargandoEditar?: boolean;
 }
 
-export const SubmoduloLista = ({ submodulos, onEditar, puedeEditar }: Props) => {
+export const SubmoduloLista = ({ submodulos, onEditar, puedeEditar, cargandoEditar }: Props) => {
   return (
     <TableContainer component={Paper} variant="outlined">
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Módulo ID</TableCell>
             <TableCell>Descripción</TableCell>
             <TableCell>Activo</TableCell>
             {puedeEditar && <TableCell align="center">Acciones</TableCell>}
@@ -43,8 +44,10 @@ export const SubmoduloLista = ({ submodulos, onEditar, puedeEditar }: Props) => 
               </TableCell>
               {puedeEditar && (
                 <TableCell align="center">
-                  <IconButton size="small" color="primary" onClick={() => onEditar(submodulo)}>
-                    <EditIcon fontSize="small" />
+                  <IconButton size="small" color="primary" disabled={cargandoEditar} onClick={() => onEditar(submodulo)}>
+                    {cargandoEditar
+                      ? <CircularProgress size={14} color="inherit" />
+                      : <EditIcon fontSize="small" />}
                   </IconButton>
                 </TableCell>
               )}

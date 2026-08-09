@@ -7,8 +7,9 @@ export const updateAccionForm = async (
     queryData: FormData
 ): Promise<IAccion> => {
     const { descripcion } = Object.fromEntries(queryData.entries());
+    const activo = queryData.get('activo') === 'true';
     try {
-        const response = await accionApi.put('/', { descripcion }, { params: { id } });
+        const response = await accionApi.put('/', { descripcion, activo }, { params: { id } });
         return response.data;
     } catch (error) {
         console.error("Error al actualizar la acción:", error);

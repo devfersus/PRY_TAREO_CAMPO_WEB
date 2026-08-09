@@ -5,6 +5,8 @@ import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import AddIcon from '@mui/icons-material/Add';
 import { SubmoduloLista } from './Pages/SubmoduloList';
 import { AddSubmoduloForm } from './Pages/SubmoduloAdd';
@@ -25,7 +27,7 @@ const Submodulos: FC<Props> = ({ getSubmodulo, permisos }) => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 2 }}>Agregar y mantener submódulos</Typography>
+      <Typography variant="h5" sx={{ mb: 2 }}>SUBMÓDULOS</Typography>
       <Divider sx={{ mb: 2 }} />
 
       {permisos.agregar && (
@@ -77,7 +79,19 @@ const Submodulos: FC<Props> = ({ getSubmodulo, permisos }) => {
         submodulos={lista.submodulos}
         onEditar={popupEditar.abrir}
         puedeEditar={permisos.editar}
+        cargandoEditar={popupEditar.cargando}
       />
+
+      <Snackbar
+        open={popupEditar.error !== null}
+        autoHideDuration={3000}
+        onClose={popupEditar.cerrarError}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" variant="filled" onClose={popupEditar.cerrarError}>
+          {popupEditar.error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

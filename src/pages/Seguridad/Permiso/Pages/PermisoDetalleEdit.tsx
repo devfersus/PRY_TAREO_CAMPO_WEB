@@ -10,8 +10,14 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import type { AxiosError } from 'axios';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
 import { getPermisoAcciones, getPermisoModulos, getPermisoSubmodulos } from '../api/getPermisos.action';
 import { getPermisoDetalles } from '../api/getPermisoDetalles.action';
 import { updatePermisoDetalles, type UpdateDetalleItem } from '../api/updatePermisoDetalle.action';
@@ -48,6 +54,8 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
   const [accionIds,      setAccionIds]      = useState<string[]>([]);
   const [grupoEditando,  setGrupoEditando]  = useState<GrupoDetalle | null>(null);
   const [isPending,      setIsPending]      = useState(false);
+  const [errorMsg,       setErrorMsg]       = useState<string | null>(null);
+  const [busqueda,       setBusqueda]       = useState('');
 
   const cargarDetalles = useCallback(async () => {
     const data = await getPermisoDetalles(permiso.id);
@@ -105,6 +113,9 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
       if (batch.length > 0) await updatePermisoDetalles(batch);
       limpiarForm();
       await cargarDetalles();
+    } catch (err) {
+      const axiosErr = err as AxiosError<{ detail?: string; message?: string }>;
+      setErrorMsg(axiosErr.response?.data?.detail ?? axiosErr.response?.data?.message ?? 'Error inesperado');
     } finally {
       setIsPending(false);
     }
@@ -137,7 +148,15 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
 
   const hayGrupo = grupoEditando !== null;
 
+  const gruposFiltrados = busqueda.trim() === ''
+    ? grupos
+    : grupos.filter((g) =>
+        g.moduloDescripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
+        g.subModuloDescripcion.toLowerCase().includes(busqueda.toLowerCase())
+      );
+
   return (
+    <>
     <Box sx={{ display: 'flex', gap: 2, pt: 1, minHeight: 380 }}>
       {/* ── Panel izquierdo: formulario editar ── */}
       <Box
@@ -155,7 +174,7 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
           </Typography>
         )}
 
-        <FormControl fullWidth required disabled={!hayGrupo}>
+        <FormControl fullWidth disabled>
           <InputLabel>Módulo</InputLabel>
           <Select
             value={moduloId}
@@ -168,7 +187,7 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
           </Select>
         </FormControl>
 
-        <FormControl fullWidth required disabled={!hayGrupo}>
+        <FormControl fullWidth disabled>
           <InputLabel>SubMódulo</InputLabel>
           <Select
             value={subModuloId}
@@ -201,8 +220,8 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
 
         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 'auto' }}>
           {hayGrupo && (
-            <Button type="button" variant="text" color="inherit" onClick={limpiarForm}>
-              Cancelar
+            <Button type="button" variant="outlined" color="error" size="small" onClick={limpiarForm}>
+              Quitar selección
             </Button>
           )}
           <Button
@@ -229,13 +248,31 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
           {permiso.descripcion}
         </Typography>
 
-        {grupos.length === 0 ? (
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Buscar módulo..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          sx={{ mb: 1 }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+
+        {gruposFiltrados.length === 0 ? (
           <Typography variant="body2" color="text.secondary">
-            Sin detalles registrados.
+            {grupos.length === 0 ? 'Sin detalles registrados.' : 'Sin resultados para la búsqueda.'}
           </Typography>
         ) : (
           <Stack spacing={1}>
-            {grupos.map((grupo) => {
+            {gruposFiltrados.map((grupo) => {
               const seleccionado = grupoEditando?.key === grupo.key;
               return (
                 <Paper
@@ -271,5 +308,17 @@ export const PermisoDetalleEdit = ({ permiso, onCancel }: Props) => {
         )}
       </Box>
     </Box>
+
+    <Snackbar
+      open={errorMsg !== null}
+      autoHideDuration={3000}
+      onClose={() => setErrorMsg(null)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+      <Alert severity="error" variant="filled" onClose={() => setErrorMsg(null)}>
+        {errorMsg}
+      </Alert>
+    </Snackbar>
+    </>
   );
 };

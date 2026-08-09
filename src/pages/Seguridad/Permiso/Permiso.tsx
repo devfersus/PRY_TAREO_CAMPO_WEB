@@ -5,6 +5,8 @@ import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import AddIcon from '@mui/icons-material/Add';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -129,7 +131,19 @@ const Permisos: FC<Props> = ({ getPermiso, permisos }) => {
         onEliminar={onEliminar}
         puedeEditar={permisos.editar}
         puedeEliminar={permisos.eliminar}
+        cargandoEditar={popupEditar.cargando}
       />
+
+      <Snackbar
+        open={popupEditar.error !== null}
+        autoHideDuration={3000}
+        onClose={popupEditar.cerrarError}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" variant="filled" onClose={popupEditar.cerrarError}>
+          {popupEditar.error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

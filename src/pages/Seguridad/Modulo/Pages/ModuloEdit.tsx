@@ -1,4 +1,4 @@
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -14,6 +14,8 @@ interface Props {
 }
 
 export const ModuloEdit = ({ modulo, onActualizar, onCancel }: Props) => {
+  const [activo, setActivo] = useState(modulo.activo);
+
   const [_state, formAction, isPending] = useActionState(
     async (_prevState: unknown, queryData: FormData) => {
       const actualizado = await updateModuloForm(modulo.id, _prevState, queryData);
@@ -32,9 +34,16 @@ export const ModuloEdit = ({ modulo, onActualizar, onCancel }: Props) => {
         fullWidth
         variant="outlined"
       />
+      <input type="hidden" name="activo" value={activo ? 'true' : 'false'} />
       <FormControlLabel
-        control={<Checkbox name="activo" defaultChecked={modulo.activo} />}
-        label="Activo"
+        control={
+          <Checkbox
+            checked={activo}
+            onChange={(e) => setActivo(e.target.checked)}
+            color="success"
+          />
+        }
+        label={activo ? 'Activo' : 'Inactivo'}
       />
       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
         <Button type="submit" variant="contained" disabled={isPending}>

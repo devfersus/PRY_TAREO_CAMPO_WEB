@@ -5,6 +5,8 @@ import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import AddIcon from '@mui/icons-material/Add';
 import { AccionLista } from './Pages/AccionList';
 import { AddAccionForm } from './Pages/AccionAdd';
@@ -25,7 +27,7 @@ const Acciones: FC<Props> = ({ getAccion, permisos }) => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 2 }}>Agregar y mantener acciones</Typography>
+      <Typography variant="h5" sx={{ mb: 2 }}>ACCIÓN</Typography>
       <Divider sx={{ mb: 2 }} />
 
       {permisos.agregar && (
@@ -77,7 +79,19 @@ const Acciones: FC<Props> = ({ getAccion, permisos }) => {
         acciones={lista.acciones}
         onEditar={popupEditar.abrir}
         puedeEditar={permisos.editar}
+        cargandoEditar={popupEditar.cargando}
       />
+
+      <Snackbar
+        open={popupEditar.error !== null}
+        autoHideDuration={3000}
+        onClose={popupEditar.cerrarError}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="error" variant="filled" onClose={popupEditar.cerrarError}>
+          {popupEditar.error}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
