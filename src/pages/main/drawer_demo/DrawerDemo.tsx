@@ -1,4 +1,5 @@
-import { useState, Suspense } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Drawer from '@mui/material/Drawer';
@@ -11,101 +12,45 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import CircularProgress from '@mui/material/CircularProgress';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import FolderIcon from '@mui/icons-material/Folder';
-import BoltIcon from '@mui/icons-material/Bolt';
-import LockIcon from '@mui/icons-material/Lock';
 
-import Acciones from '../../Seguridad/Accion/Accion';
-import { getAccionAll } from '../../Seguridad/Accion/api/getAccions.action';
-import type { IAccion } from '../../Seguridad/Accion/interface/IAccion.interface';
-import Modulos from '../../Seguridad/Modulo/Modulo';
-import { getModuloAll } from '../../Seguridad/Modulo/api/getModulos.action';
-import type { IModulo } from '../../Seguridad/Modulo/interface/IModulo.interface';
-import Submodulos from '../../Seguridad/SubModulo/Submodulo';
-import { getSubmoduloAll } from '../../Seguridad/SubModulo/api/getSubmodulos.action';
-import type { ISubmoduloListar } from '../../Seguridad/SubModulo/CasoUso/Listar/interface/ISubmoduloListar.interface';
-import Permisos from '../../Seguridad/Permiso/Permiso';
-import { getPermisoAll } from '../../Seguridad/Permiso/api/getPermisos.action';
-import type { IPermiso } from '../../Seguridad/Permiso/interface/IPermiso.interface';
+import { seguridadRoutes, type SeguridadRoute } from '../../../shared/routes/seguridad.routes';
 
 const DRAWER_WIDTH = 220;
 const APPBAR_HEIGHT = 64;
-
-const NAV_ITEMS = [
-  { id: 'modulo',    label: 'Módulo',    icon: <ViewModuleIcon fontSize="small" /> },
-  { id: 'submodulo', label: 'SubMódulo', icon: <FolderIcon fontSize="small" /> },
-  { id: 'accion',    label: 'Acción',    icon: <BoltIcon fontSize="small" /> },
-  { id: 'permiso',   label: 'Permiso',   icon: <LockIcon fontSize="small" /> },
-];
-
-function LoadingFallback({ label }: { label: string }) {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 3 }}>
-      <CircularProgress size={20} />
-      <Typography variant="body2" color="text.secondary">{label}</Typography>
-    </Box>
-  );
-}
-
-function ModuloPage({ promise }: { promise: Promise<IModulo[]> }) {
-  return (
-    <Suspense fallback={<LoadingFallback label="Cargando módulos..." />}>
-      <Modulos getModulo={promise} permisos={{ agregar: true, editar: true }} />
-    </Suspense>
-  );
-}
-
-function SubmoduloPage({ promise }: { promise: Promise<ISubmoduloListar[]> }) {
-  return (
-    <Suspense fallback={<LoadingFallback label="Cargando submódulos..." />}>
-      <Submodulos getSubmodulo={promise} permisos={{ agregar: true, editar: true }} />
-    </Suspense>
-  );
-}
-
-function AccionPage({ promise }: { promise: Promise<IAccion[]> }) {
-  return (
-    <Suspense fallback={<LoadingFallback label="Cargando acciones..." />}>
-      <Acciones permisos={{ agregar: true, editar: true }} getAccion={promise} />
-    </Suspense>
-  );
-}
-
-function PermisoPage({ promise }: { promise: Promise<IPermiso[]> }) {
-  return (
-    <Suspense fallback={<LoadingFallback label="Cargando permisos..." />}>
-      <Permisos
-        getPermiso={promise}
-        permisos={{ agregar: true, editar: true, eliminar: true }}
-      />
-    </Suspense>
-  );
-}
 
 interface DrawerDemoProps {
   onLogout: () => void;
 }
 
 export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
-  const [open, setOpen] = useState(true);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const [open,     setOpen]     = useState(true);
+  const [promises, setPromises] = useState<Map<string, Promise<unknown>>>(new Map());
 
-  const [moduloPromise,    setModuloPromise]    = useState<Promise<IModulo[]> | null>(null);
-  const [submoduloPromise, setSubmoduloPromise] = useState<Promise<ISubmoduloListar[]> | null>(null);
-  const [accionPromise,    setAccionPromise]    = useState<Promise<IAccion[]> | null>(null);
-  const [permisoPromise,   setPermisoPromise]   = useState<Promise<IPermiso[]> | null>(null);
+  const activeRoute = seguridadRoutes.find((r) => r.path === location.pathname) ?? null;
 
-  const handleSelect = (id: string) => {
-    setActiveId(id);
-    if (id === 'modulo'    && !moduloPromise)    setModuloPromise(getModuloAll());
-    if (id === 'submodulo' && !submoduloPromise) setSubmoduloPromise(getSubmoduloAll());
-    if (id === 'accion'    && !accionPromise)    setAccionPromise(getAccionAll());
-    if (id === 'permiso'   && !permisoPromise)   setPermisoPromise(getPermisoAll());
+  // Cargar datos al navegar directamente por URL
+  useEffect(() => {
+    if (activeRoute && !promises.has(activeRoute.id)) {
+      setPromises((prev) => new Map(prev).set(activeRoute.id, activeRoute.fetcher()));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRoute?.id]);
+
+  const handleSelect = (route: SeguridadRoute) => {
+    navigate(route.path);
+    if (!promises.has(route.id)) {
+      setPromises((prev) => new Map(prev).set(route.id, route.fetcher()));
+    }
   };
+
+  // Redirigir raíz → primer módulo
+  if (location.pathname === '/') return <Navigate to="/modulo" replace />;
+
+  const activePromise = activeRoute ? promises.get(activeRoute.id) : undefined;
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -163,14 +108,14 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
         </Box>
         <Divider />
         <List dense disablePadding>
-          {NAV_ITEMS.map((item) => (
+          {seguridadRoutes.map((route) => (
             <ListItemButton
-              key={item.id}
-              selected={activeId === item.id}
-              onClick={() => handleSelect(item.id)}
+              key={route.id}
+              selected={activeRoute?.id === route.id}
+              onClick={() => handleSelect(route)}
               sx={{
                 borderLeft: '3px solid',
-                borderColor: activeId === item.id ? 'primary.main' : 'transparent',
+                borderColor: activeRoute?.id === route.id ? 'primary.main' : 'transparent',
                 '&.Mui-selected': {
                   bgcolor: 'primary.50',
                   color: 'primary.main',
@@ -178,13 +123,13 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36 }}>{item.icon}</ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 36 }}>{route.icon}</ListItemIcon>
               <ListItemText
-                primary={item.label}
+                primary={route.label}
                 slotProps={{
                   primary: {
                     variant: 'body2',
-                    fontWeight: activeId === item.id ? 600 : 400,
+                    fontWeight: activeRoute?.id === route.id ? 600 : 400,
                   },
                 }}
               />
@@ -206,25 +151,13 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
           height: `calc(100vh - ${APPBAR_HEIGHT}px)`,
         }}
       >
-        {activeId === null && (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-            }}
-          >
-            <Typography variant="body1" color="text.secondary">
-              Selecciona una opción del menú lateral
-            </Typography>
-          </Box>
+        {activeRoute && (
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            {activeRoute.label}
+          </Typography>
         )}
 
-        {activeId === 'modulo'    && moduloPromise    && <ModuloPage    promise={moduloPromise} />}
-        {activeId === 'submodulo' && submoduloPromise && <SubmoduloPage promise={submoduloPromise} />}
-        {activeId === 'accion'    && accionPromise    && <AccionPage    promise={accionPromise} />}
-        {activeId === 'permiso'   && permisoPromise   && <PermisoPage   promise={permisoPromise} />}
+        {activeRoute && activePromise && activeRoute.render(activePromise)}
       </Box>
 
     </Box>

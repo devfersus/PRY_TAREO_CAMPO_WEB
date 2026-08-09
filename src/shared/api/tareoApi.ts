@@ -11,8 +11,19 @@ export function createApiInstance(path: string) {
     return new Promise((resolve) => {
       setTimeout(() => resolve(config));
       // reject(new Error('Error de prueba desde interceptor'));
-    }); 
+    });
   });
- 
-  return instance; 
+
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        window.location.replace('/login');
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
 }

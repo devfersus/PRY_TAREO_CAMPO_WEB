@@ -1,5 +1,6 @@
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { theme } from './shared/theme/theme'
@@ -12,17 +13,32 @@ function App() {
     () => !!localStorage.getItem('token')
   );
 
-  if (!isAuthenticated) {
-    return <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />;
-  }
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+  };
 
   return (
-    <DrawerDemo
-      onLogout={() => {
-        localStorage.removeItem('token');
-        setIsAuthenticated(false);
-      }}
-    />
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? <Navigate to="/modulo" replace />
+              : <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />
+          }
+        />
+        <Route
+          path="/*"
+          element={
+            isAuthenticated
+              ? <DrawerDemo onLogout={handleLogout} />
+              : <Navigate to="/login" replace />
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
