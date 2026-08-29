@@ -9,7 +9,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import type { IPermiso } from '../interface/IPermiso.interface';
@@ -19,9 +18,7 @@ interface Props {
   selectedId: string | null;
   onSeleccionar: (permiso: IPermiso) => void;
   onEditar: (permiso: IPermiso) => void;
-  onEliminar: (id: string) => void;
   puedeEditar: boolean;
-  puedeEliminar: boolean;
   cargandoEditar?: boolean;
 }
 
@@ -30,9 +27,7 @@ export const PermisoLista = ({
   selectedId,
   onSeleccionar,
   onEditar,
-  onEliminar,
   puedeEditar,
-  puedeEliminar,
   cargandoEditar,
 }: Props) => {
   return (
@@ -42,7 +37,7 @@ export const PermisoLista = ({
           <TableRow>
             <TableCell>Descripción</TableCell>
             <TableCell>Activo</TableCell>
-            {(puedeEditar || puedeEliminar) && <TableCell align="center">Acciones</TableCell>}
+            {puedeEditar && <TableCell align="center">Acciones</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -62,20 +57,13 @@ export const PermisoLista = ({
                     : <CancelIcon fontSize="small" color="error" />}
                 </Tooltip>
               </TableCell>
-              {(puedeEditar || puedeEliminar) && (
+              {puedeEditar && (
                 <TableCell align="center" onClick={(e) => e.stopPropagation()}>
-                  {puedeEditar && (
-                    <IconButton size="small" color="primary" title="Editar" disabled={cargandoEditar} onClick={() => onEditar(permiso)}>
-                      {cargandoEditar
-                        ? <CircularProgress size={14} color="inherit" />
-                        : <EditIcon fontSize="small" />}
-                    </IconButton>
-                  )}
-                  {puedeEliminar && (
-                    <IconButton size="small" color="error" title="Eliminar" onClick={() => onEliminar(permiso.id)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  )}
+                  <IconButton size="small" color="primary" title="Editar" disabled={cargandoEditar} onClick={() => onEditar(permiso)}>
+                    {cargandoEditar
+                      ? <CircularProgress size={14} color="inherit" />
+                      : <EditIcon fontSize="small" />}
+                  </IconButton>
                 </TableCell>
               )}
             </TableRow>

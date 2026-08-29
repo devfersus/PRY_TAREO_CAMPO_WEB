@@ -1,5 +1,7 @@
 import { useActionState, useState } from 'react';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -18,6 +20,7 @@ export const PermisoEdit = ({ permiso, onActualizar, onCancel }: Props) => {
 
   const [_state, formAction, isPending] = useActionState(
     async (_prevState: unknown, queryData: FormData) => {
+      await new Promise((r) => setTimeout(r, 4000));
       await updatePermisoForm(permiso.id, _prevState, queryData);
       onActualizar();
     },
@@ -26,6 +29,12 @@ export const PermisoEdit = ({ permiso, onActualizar, onCancel }: Props) => {
 
   return (
     <Box component="form" action={formAction} sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+      {isPending && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <CircularProgress size={20} />
+          <Typography variant="body2" color="text.secondary">Procesando...</Typography>
+        </Box>
+      )}
       <TextField
         label="Descripción"
         name="descripcion"
@@ -57,7 +66,7 @@ export const PermisoEdit = ({ permiso, onActualizar, onCancel }: Props) => {
           Guardar
         </Button>
         {onCancel && (
-          <Button type="button" variant="outlined" color="inherit" onClick={onCancel}>
+          <Button type="button" variant="outlined" color="inherit" onClick={onCancel} disabled={isPending}>
             Cancelar
           </Button>
         )}

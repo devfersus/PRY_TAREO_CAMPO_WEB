@@ -34,7 +34,6 @@ const Permisos: FC<Props> = ({ getPermiso, permisos }) => {
     popupEditar,
     popupDetalle,
     popupDetalleEditar,
-    onEliminar,
   } = usePermisos(getPermiso);
 
   return (
@@ -128,9 +127,7 @@ const Permisos: FC<Props> = ({ getPermiso, permisos }) => {
         selectedId={lista.filaSeleccionada?.id ?? null}
         onSeleccionar={lista.seleccionarFila}
         onEditar={popupEditar.abrir}
-        onEliminar={onEliminar}
         puedeEditar={permisos.editar}
-        puedeEliminar={permisos.eliminar}
         cargandoEditar={popupEditar.cargando}
       />
 

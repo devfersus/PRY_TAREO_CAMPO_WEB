@@ -1,5 +1,6 @@
 import { useActionState } from 'react';
 import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -23,6 +24,7 @@ export const AddModuloForm = ({ onAddModulo, onCancel }: Props) => {
 
   return (
     <Box component="form" action={formAction} sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+      {isPending && <LinearProgress sx={{ borderRadius: 1 }} />}
       <TextField
         name="descripcion"
         label="Descripción"

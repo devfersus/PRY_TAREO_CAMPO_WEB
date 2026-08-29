@@ -2,6 +2,7 @@ import { Suspense, type ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import { ListSkeleton } from '../components/ListSkeleton';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import FolderIcon from '@mui/icons-material/Folder';
 import BoltIcon from '@mui/icons-material/Bolt';
@@ -49,7 +50,7 @@ export const seguridadRoutes: SeguridadRoute[] = [
     icon:    <ViewModuleIcon fontSize="small" />,
     fetcher: getModuloAll as () => Promise<unknown>,
     render:  (p) => (
-      <Suspense fallback={<LoadingFallback label="Cargando módulos..." />}>
+      <Suspense fallback={<ListSkeleton rows={6} cols={3} />}>
         <Modulos getModulo={p as Promise<IModulo[]>} permisos={{ agregar: true, editar: true }} />
       </Suspense>
     ),
@@ -61,7 +62,7 @@ export const seguridadRoutes: SeguridadRoute[] = [
     icon:    <FolderIcon fontSize="small" />,
     fetcher: getSubmoduloAll as () => Promise<unknown>,
     render:  (p) => (
-      <Suspense fallback={<LoadingFallback label="Cargando submódulos..." />}>
+      <Suspense fallback={<ListSkeleton rows={6} cols={3} />}>
         <Submodulos getSubmodulo={p as Promise<ISubmoduloListar[]>} permisos={{ agregar: true, editar: true }} />
       </Suspense>
     ),
@@ -73,7 +74,7 @@ export const seguridadRoutes: SeguridadRoute[] = [
     icon:    <BoltIcon fontSize="small" />,
     fetcher: getAccionAll as () => Promise<unknown>,
     render:  (p) => (
-      <Suspense fallback={<LoadingFallback label="Cargando acciones..." />}>
+      <Suspense fallback={<ListSkeleton rows={6} cols={3} />}>
         <Acciones getAccion={p as Promise<IAccion[]>} permisos={{ agregar: true, editar: true }} />
       </Suspense>
     ),
@@ -85,7 +86,7 @@ export const seguridadRoutes: SeguridadRoute[] = [
     icon:    <LockIcon fontSize="small" />,
     fetcher: getPermisoAll as () => Promise<unknown>,
     render:  (p) => (
-      <Suspense fallback={<LoadingFallback label="Cargando permisos..." />}>
+      <Suspense fallback={<ListSkeleton rows={6} cols={4} />}>
         <Permisos getPermiso={p as Promise<IPermiso[]>} permisos={{ agregar: true, editar: true, eliminar: true }} />
       </Suspense>
     ),
