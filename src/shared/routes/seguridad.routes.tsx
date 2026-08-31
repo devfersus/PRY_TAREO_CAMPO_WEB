@@ -7,6 +7,9 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import FolderIcon from '@mui/icons-material/Folder';
 import BoltIcon from '@mui/icons-material/Bolt';
 import LockIcon from '@mui/icons-material/Lock';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import BusinessIcon from '@mui/icons-material/Business';
+import PersonIcon from '@mui/icons-material/Person';
 
 import Modulos from '../../pages/Seguridad/Modulo/Modulo';
 import { getModuloAll } from '../../pages/Seguridad/Modulo/api/getModulos.action';
@@ -23,6 +26,18 @@ import type { IAccion } from '../../pages/Seguridad/Accion/interface/IAccion.int
 import Permisos from '../../pages/Seguridad/Permiso/Permiso';
 import { getPermisoAll } from '../../pages/Seguridad/Permiso/api/getPermisos.action';
 import type { IPermiso } from '../../pages/Seguridad/Permiso/interface/IPermiso.interface';
+
+import ActividadesOperario from '../../pages/Seguridad/ActividadOperario/ActividadOperario';
+import { getActividadOperarioAll } from '../../pages/Seguridad/ActividadOperario/api/getActividadesOperario.action';
+import type { IActividadOperario } from '../../pages/Seguridad/ActividadOperario/interface/IActividadOperario.interface';
+
+import Proveedores from '../../pages/Seguridad/Proveedor/Proveedor';
+import { getProveedorAll } from '../../pages/Seguridad/Proveedor/api/getProveedores.action';
+import type { IProveedor } from '../../pages/Seguridad/Proveedor/interface/IProveedor.interface';
+
+import Usuarios from '../../pages/Seguridad/Usuario/Usuario';
+import { getUsuarioAll } from '../../pages/Seguridad/Usuario/api/getUsuarios.action';
+import type { IUsuario } from '../../pages/Seguridad/Usuario/interface/IUsuario.interface';
 
 export function LoadingFallback({ label }: { label: string }) {
   return (
@@ -88,6 +103,42 @@ export const seguridadRoutes: SeguridadRoute[] = [
     render:  (p) => (
       <Suspense fallback={<ListSkeleton rows={6} cols={4} />}>
         <Permisos getPermiso={p as Promise<IPermiso[]>} permisos={{ agregar: true, editar: true, eliminar: true }} />
+      </Suspense>
+    ),
+  },
+  {
+    id:      'actividad-operario',
+    path:    '/actividad-operario',
+    label:   'Actividad Operario',
+    icon:    <AssignmentIcon fontSize="small" />,
+    fetcher: getActividadOperarioAll as () => Promise<unknown>,
+    render:  (p) => (
+      <Suspense fallback={<ListSkeleton rows={6} cols={3} />}>
+        <ActividadesOperario getActividadOperario={p as Promise<IActividadOperario[]>} permisos={{ agregar: true, editar: true, eliminar: true }} />
+      </Suspense>
+    ),
+  },
+  {
+    id:      'proveedor',
+    path:    '/proveedor',
+    label:   'Proveedor',
+    icon:    <BusinessIcon fontSize="small" />,
+    fetcher: getProveedorAll as () => Promise<unknown>,
+    render:  (p) => (
+      <Suspense fallback={<ListSkeleton rows={6} cols={5} />}>
+        <Proveedores getProveedor={p as Promise<IProveedor[]>} permisos={{ agregar: true, editar: true }} />
+      </Suspense>
+    ),
+  },
+  {
+    id:      'usuario',
+    path:    '/usuario',
+    label:   'Usuario',
+    icon:    <PersonIcon fontSize="small" />,
+    fetcher: getUsuarioAll as () => Promise<unknown>,
+    render:  (p) => (
+      <Suspense fallback={<ListSkeleton rows={6} cols={6} />}>
+        <Usuarios getUsuario={p as Promise<IUsuario[]>} permisos={{ agregar: true, editar: true, eliminar: true }} />
       </Suspense>
     ),
   },

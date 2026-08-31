@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -16,6 +16,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import { seguridadRoutes, type SeguridadRoute } from '../../../shared/routes/seguridad.routes';
+import { maestroRoutes } from '../../../shared/routes/maestro.routes';
+import { coreRoutes } from '../../../shared/routes/core.routes';
 
 const DRAWER_WIDTH = 220;
 const APPBAR_HEIGHT = 64;
@@ -29,12 +31,15 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
   const location  = useLocation();
   const [open,     setOpen]     = useState(true);
   const [promises, setPromises] = useState<Map<string, Promise<unknown>>>(new Map());
+  const fetchedIds = useRef(new Set<string>());
 
-  const activeRoute = seguridadRoutes.find((r) => r.path === location.pathname) ?? null;
+  const allRoutes = [...seguridadRoutes, ...maestroRoutes, ...coreRoutes];
+  const activeRoute = allRoutes.find((r) => r.path === location.pathname) ?? null;
 
   // Cargar datos al navegar directamente por URL
   useEffect(() => {
-    if (activeRoute && !promises.has(activeRoute.id)) {
+    if (activeRoute && !fetchedIds.current.has(activeRoute.id)) {
+      fetchedIds.current.add(activeRoute.id);
       setPromises((prev) => new Map(prev).set(activeRoute.id, activeRoute.fetcher()));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,7 +47,8 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
 
   const handleSelect = (route: SeguridadRoute) => {
     navigate(route.path);
-    if (!promises.has(route.id)) {
+    if (!fetchedIds.current.has(route.id)) {
+      fetchedIds.current.add(route.id);
       setPromises((prev) => new Map(prev).set(route.id, route.fetcher()));
     }
   };
@@ -93,49 +99,58 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
           },
         }}
       >
-        <Box
-          sx={{
-            px: 2,
-            py: 1.5,
-            fontSize: 11,
-            fontWeight: 700,
-            color: 'text.secondary',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-          }}
-        >
-          Seguridad
-        </Box>
-        <Divider />
-        <List dense disablePadding>
-          {seguridadRoutes.map((route) => (
-            <ListItemButton
-              key={route.id}
-              selected={activeRoute?.id === route.id}
-              onClick={() => handleSelect(route)}
+        {[
+          { label: 'Seguridad', routes: seguridadRoutes },
+          { label: 'Maestro',   routes: maestroRoutes   },
+          { label: 'Core',      routes: coreRoutes      },
+        ].map((group, gi) => (
+          <Box key={group.label}>
+            {gi > 0 && <Divider />}
+            <Box
               sx={{
-                borderLeft: '3px solid',
-                borderColor: activeRoute?.id === route.id ? 'primary.main' : 'transparent',
-                '&.Mui-selected': {
-                  bgcolor: 'primary.50',
-                  color: 'primary.main',
-                  '& .MuiListItemIcon-root': { color: 'primary.main' },
-                },
+                px: 2,
+                py: 1.5,
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'text.secondary',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
               }}
             >
-              <ListItemIcon sx={{ minWidth: 36 }}>{route.icon}</ListItemIcon>
-              <ListItemText
-                primary={route.label}
-                slotProps={{
-                  primary: {
-                    variant: 'body2',
-                    fontWeight: activeRoute?.id === route.id ? 600 : 400,
-                  },
-                }}
-              />
-            </ListItemButton>
-          ))}
-        </List>
+              {group.label}
+            </Box>
+            <Divider />
+            <List dense disablePadding>
+              {group.routes.map((route) => (
+                <ListItemButton
+                  key={route.id}
+                  selected={activeRoute?.id === route.id}
+                  onClick={() => handleSelect(route)}
+                  sx={{
+                    borderLeft: '3px solid',
+                    borderColor: activeRoute?.id === route.id ? 'primary.main' : 'transparent',
+                    '&.Mui-selected': {
+                      bgcolor: 'primary.50',
+                      color: 'primary.main',
+                      '& .MuiListItemIcon-root': { color: 'primary.main' },
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>{route.icon}</ListItemIcon>
+                  <ListItemText
+                    primary={route.label}
+                    slotProps={{
+                      primary: {
+                        variant: 'body2',
+                        fontWeight: activeRoute?.id === route.id ? 600 : 400,
+                      },
+                    }}
+                  />
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
+        ))}
       </Drawer>
 
       {/* Contenido principal */}
