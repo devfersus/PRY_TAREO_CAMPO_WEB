@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
-import CategoryIcon from '@mui/icons-material/Category';
+import CategoryIcon  from '@mui/icons-material/Category';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import StraightenIcon from '@mui/icons-material/Straighten';
+import WarehouseIcon  from '@mui/icons-material/Warehouse';
 import { ListSkeleton } from '../components/ListSkeleton';
 import type { SeguridadRoute } from './seguridad.routes';
 
@@ -11,6 +13,14 @@ import type { ICategoria } from '../../pages/Maestro/Categoria/interface/ICatego
 import Productos from '../../pages/Maestro/Producto/Producto';
 import { getProductoAll } from '../../pages/Maestro/Producto/api/getProductos.action';
 import type { IProducto } from '../../pages/Maestro/Producto/interface/IProducto.interface';
+
+import UnidadesMedida from '../../pages/Maestro/UnidadMedida/UnidadMedida';
+import { getUnidadMedidaAll } from '../../pages/Maestro/UnidadMedida/api/getUnidadesMedida.action';
+import type { IUnidadMedida } from '../../pages/Maestro/UnidadMedida/interface/IUnidadMedida.interface';
+
+import Almacenes from '../../pages/Maestro/Almacen/Almacen';
+import { getAlmacenAll } from '../../pages/Maestro/Almacen/api/getAlmacenes.action';
+import type { IAlmacen } from '../../pages/Maestro/Almacen/interface/IAlmacen.interface';
 
 export const maestroRoutes: SeguridadRoute[] = [
   {
@@ -34,6 +44,30 @@ export const maestroRoutes: SeguridadRoute[] = [
     render:  (p) => (
       <Suspense fallback={<ListSkeleton rows={6} cols={6} />}>
         <Productos getProducto={p as Promise<IProducto[]>} permisos={{ agregar: true, editar: true }} />
+      </Suspense>
+    ),
+  },
+  {
+    id:      'unidad-medida',
+    path:    '/unidad-medida',
+    label:   'Unidad de Medida',
+    icon:    <StraightenIcon fontSize="small" />,
+    fetcher: getUnidadMedidaAll as () => Promise<unknown>,
+    render:  (p) => (
+      <Suspense fallback={<ListSkeleton rows={6} cols={4} />}>
+        <UnidadesMedida getUnidadMedida={p as Promise<IUnidadMedida[]>} permisos={{ agregar: true, editar: true }} />
+      </Suspense>
+    ),
+  },
+  {
+    id:      'almacen',
+    path:    '/almacen',
+    label:   'Almacén',
+    icon:    <WarehouseIcon fontSize="small" />,
+    fetcher: getAlmacenAll as () => Promise<unknown>,
+    render:  (p) => (
+      <Suspense fallback={<ListSkeleton rows={6} cols={4} />}>
+        <Almacenes getAlmacen={p as Promise<IAlmacen[]>} permisos={{ agregar: true, editar: true }} />
       </Suspense>
     ),
   },
