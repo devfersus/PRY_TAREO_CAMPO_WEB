@@ -17,6 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ComboSearchField } from '../../../../shared/components/ComboSearchField';
 import { getProductosCombo } from '../../../Maestro/Producto/api/productoCombo.action';
+import { getAlmacenesCombo } from '../../../Maestro/Almacen/api/almacenCombo.action';
 import type { ICompra } from '../interface/ICompra.interface';
 import type { ICompraDetalleItem, ICompraDetalleListItem } from '../interface/ICompraDetalle.interface';
 import { createCompraDetalleMasivo } from '../api/createCompraDetalle.action';
@@ -36,6 +37,7 @@ export const CompraDetalleForm = ({ compra, onGuardar, onCancel }: Props) => {
   const itemFormRef                     = useRef<HTMLFormElement>(null);
 
   const fetchProductos = useCallback((s: string) => getProductosCombo(s), []);
+  const fetchAlmacenes = useCallback((s: string) => getAlmacenesCombo(s), []);
 
   useEffect(() => {
     getCompraDetallePorCompra(compra.codigoCompra, compra.codigoProveedor)
@@ -47,9 +49,11 @@ export const CompraDetalleForm = ({ compra, onGuardar, onCancel }: Props) => {
     if (!itemFormRef.current) return;
     const fd             = new FormData(itemFormRef.current);
     const codigoProducto = (fd.get('codigoProducto_item') as string) || '';
-    if (!codigoProducto) return;
+    const codigoAlmacen  = (fd.get('codigoAlmacen_item')  as string) || '';
+    if (!codigoProducto || !codigoAlmacen) return;
 
     setItems(prev => [...prev, {
+      codigoAlmacen,
       unidad        : parseFloat(fd.get('unidad_item')   as string) || 0,
       cantidad      : parseFloat(fd.get('cantidad_item') as string) || 0,
       codigoProducto,
@@ -67,7 +71,11 @@ export const CompraDetalleForm = ({ compra, onGuardar, onCancel }: Props) => {
     setIsPending(true);
     try {
       await createCompraDetalleMasivo({
-        codigoCompra: compra.codigoCompra,
+        codigoCompra    : compra.codigoCompra,
+        codigoProveedor : compra.codigoProveedor,
+        usuarioRegistro : null,
+        ipv4Registro    : null,
+        ipv6Registro    : null,
         items,
       });
       onGuardar();
@@ -146,6 +154,12 @@ export const CompraDetalleForm = ({ compra, onGuardar, onCancel }: Props) => {
             fetchOptions={fetchProductos}
             disabled={isPending}
           />
+          <ComboSearchField
+            name="codigoAlmacen_item"
+            label="Almacén"
+            fetchOptions={fetchAlmacenes}
+            disabled={isPending}
+          />
           <Box sx={{ display: 'flex', gap: 2 }}>
             <TextField
               name="unidad_item"
@@ -196,6 +210,7 @@ export const CompraDetalleForm = ({ compra, onGuardar, onCancel }: Props) => {
               <TableRow>
                 <TableCell>#</TableCell>
                 <TableCell>Producto</TableCell>
+                <TableCell>Almacén</TableCell>
                 <TableCell align="right">Unidad</TableCell>
                 <TableCell align="right">Cantidad</TableCell>
                 <TableCell>Comentario</TableCell>
@@ -207,6 +222,7 @@ export const CompraDetalleForm = ({ compra, onGuardar, onCancel }: Props) => {
                 <TableRow key={i} hover>
                   <TableCell>{i + 1}</TableCell>
                   <TableCell>{item.codigoProducto}</TableCell>
+                  <TableCell>{item.codigoAlmacen}</TableCell>
                   <TableCell align="right">{item.unidad.toFixed(2)}</TableCell>
                   <TableCell align="right">{item.cantidad.toFixed(2)}</TableCell>
                   <TableCell>{item.comentario}</TableCell>

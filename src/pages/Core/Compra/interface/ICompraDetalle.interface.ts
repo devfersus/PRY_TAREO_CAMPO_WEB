@@ -1,4 +1,5 @@
 export interface ICompraDetalleItem {
+  codigoAlmacen : string;
   unidad        : number;
   cantidad      : number;
   codigoProducto: string;
@@ -7,8 +8,12 @@ export interface ICompraDetalleItem {
 }
 
 export interface ICompraDetalleMasivo {
-  codigoCompra: string;
-  items       : ICompraDetalleItem[];
+  codigoCompra    : string;
+  codigoProveedor : string;
+  usuarioRegistro : null;
+  ipv4Registro    : null;
+  ipv6Registro    : null;
+  items           : ICompraDetalleItem[];
 }
 
 export interface ICompraDetalleListItem {
