@@ -33,7 +33,7 @@ export const AddProductoForm = ({ onAddProducto, onCancel }: Props) => {
   return (
     <Box component="form" action={formAction} sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
       {isPending && <LinearProgress sx={{ borderRadius: 1 }} />}
-      <TextField name="codigo" label="Código" fullWidth autoFocus variant="outlined" />
+      <TextField name="codigo" label="Código" fullWidth autoFocus variant="outlined" inputProps={{ maxLength: 10 }} />
       <ComboSearchField name="idCategoria" label="Categoría"        fetchOptions={fetchCategorias} disabled={isPending} />
       <ComboSearchField name="idProveedor" label="Proveedor"        fetchOptions={fetchProveedores} disabled={isPending} />
       <TextField

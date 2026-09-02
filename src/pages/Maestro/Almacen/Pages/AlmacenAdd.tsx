@@ -27,7 +27,7 @@ export const AddAlmacenForm = ({ onAddAlmacen, onCancel }: Props) => {
     return (
         <Box component="form" action={formAction} sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
             {isPending && <LinearProgress sx={{ borderRadius: 1 }} />}
-            <TextField name="codigo"      label="Código"       fullWidth autoFocus variant="outlined" />
+            <TextField name="codigo"      label="Código"       fullWidth autoFocus variant="outlined" inputProps={{ maxLength: 10 }} />
             <TextField name="descripcion" label="Descripción"  fullWidth variant="outlined" />
             <TextField name="ubicacion"   label="Ubicación"    fullWidth variant="outlined" />
             <input type="hidden" name="estado" value={estado ? 'true' : 'false'} />

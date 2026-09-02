@@ -35,6 +35,7 @@ export const AddUsuarioForm = ({ onAddUsuario, onCancel }: Props) => {
                 fullWidth
                 autoFocus
                 variant="outlined"
+                inputProps={{ maxLength: 10 }}
             />
             <TextField
                 name="nombre"

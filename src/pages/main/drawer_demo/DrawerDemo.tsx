@@ -74,7 +74,7 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600, letterSpacing: '0.02em' }}>
-            TAREO CAMPO
+            INVENTARIO
           </Typography>
           <Button color="inherit" startIcon={<LogoutIcon />} onClick={onLogout}>
             Cerrar sesión

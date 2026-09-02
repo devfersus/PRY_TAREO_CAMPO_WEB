@@ -30,7 +30,7 @@ export const AddProveedorForm = ({ onAddProveedor, onCancel }: Props) => {
   return (
     <Box component="form" action={formAction} sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
       {isPending && <LinearProgress sx={{ borderRadius: 1 }} />}
-      <TextField name="codigo"      label="Código"      fullWidth autoFocus variant="outlined" />
+      <TextField name="codigo"      label="Código"      fullWidth autoFocus variant="outlined" inputProps={{ maxLength: 10 }} />
       <TextField name="descripcion" label="Descripción" fullWidth variant="outlined" />
       <TextField name="comentario"  label="Comentario"  fullWidth multiline rows={2} variant="outlined" />
       <ComboSearchField name="usuarioContactoId" label="Usuario Contacto" fetchOptions={fetchUsuarios} disabled={isPending} />

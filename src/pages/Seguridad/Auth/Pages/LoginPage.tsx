@@ -13,7 +13,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import type { ILoginCredentials } from '../interface/IAuth.interface';
 import { useAuth } from '../hooks/useAuth';
-import fondoPantalla from '../../../../img/fondo_pantalla.jpg';
 
 interface Props {
   onLoginSuccess: () => void;
@@ -42,14 +41,9 @@ export const LoginPage = ({ onLoginSuccess }: Props) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundImage: `url(${fondoPantalla})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%)',
       }}
     >
-      {/* Overlay oscuro */}
-      <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.55)' }} />
-
       {/* Card de login */}
       <Card
         sx={{
@@ -70,7 +64,7 @@ export const LoginPage = ({ onLoginSuccess }: Props) => {
             align="center"
             sx={{ letterSpacing: '0.06em', mb: 0.5 }}
           >
-            TAREO CAMPO
+            INVENTARIO
           </Typography>
 
           <Divider sx={{ my: 2 }} />
