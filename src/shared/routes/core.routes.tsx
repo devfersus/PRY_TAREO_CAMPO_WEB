@@ -29,62 +29,67 @@ import type { IAjuste } from '../../pages/Core/Ajuste/interface/IAjuste.interfac
 
 export const coreRoutes: SeguridadRoute[] = [
   {
-    id:      'compra',
-    path:    '/compra',
-    label:   'Compra',
-    icon:    <ShoppingCartIcon fontSize="small" />,
-    fetcher: getCompraAll as () => Promise<unknown>,
-    render:  (p) => (
+    id:         'compra',
+    path:       '/compra',
+    label:      'Compra',
+    icon:       <ShoppingCartIcon fontSize="small" />,
+    permisoKey: 'CORE|COMPRA',
+    fetcher:    getCompraAll as () => Promise<unknown>,
+    render:     (p, permisos) => (
       <Suspense fallback={<ListSkeleton rows={6} cols={8} />}>
-        <Compras getCompra={p as Promise<ICompra[]>} permisos={{ agregar: true, editar: true }} />
+        <Compras getCompra={p as Promise<ICompra[]>} permisos={{ agregar: permisos.agregar ?? false, editar: permisos.editar ?? false }} />
       </Suspense>
     ),
   },
   {
-    id:      'stock',
-    path:    '/stock',
-    label:   'Stock',
-    icon:    <InventoryIcon fontSize="small" />,
-    fetcher: getStockAll as () => Promise<unknown>,
-    render:  (p) => (
+    id:         'stock',
+    path:       '/stock',
+    label:      'Stock',
+    icon:       <InventoryIcon fontSize="small" />,
+    permisoKey: 'CORE|STOCK',
+    fetcher:    getStockAll as () => Promise<unknown>,
+    render:     (p, permisos) => (
       <Suspense fallback={<ListSkeleton rows={6} cols={7} />}>
-        <Stock getStock={p as Promise<IStock[]>} permisos={{ editar: true }} />
+        <Stock getStock={p as Promise<IStock[]>} permisos={{ editar: permisos.editar ?? false }} />
       </Suspense>
     ),
   },
   {
-    id:      'salida',
-    path:    '/salida',
-    label:   'Salida',
-    icon:    <OutputIcon fontSize="small" />,
-    fetcher: getSalidaAll as () => Promise<unknown>,
-    render:  (p) => (
+    id:         'salida',
+    path:       '/salida',
+    label:      'Salida',
+    icon:       <OutputIcon fontSize="small" />,
+    permisoKey: 'CORE|SALIDA',
+    fetcher:    getSalidaAll as () => Promise<unknown>,
+    render:     (p, permisos) => (
       <Suspense fallback={<ListSkeleton rows={6} cols={4} />}>
-        <Salidas getSalida={p as Promise<ISalida[]>} permisos={{ agregar: true, editar: true }} />
+        <Salidas getSalida={p as Promise<ISalida[]>} permisos={{ agregar: permisos.agregar ?? false, editar: permisos.editar ?? false }} />
       </Suspense>
     ),
   },
   {
-    id:      'kardex',
-    path:    '/kardex',
-    label:   'Kardex',
-    icon:    <ReceiptLongIcon fontSize="small" />,
-    fetcher: getKardexAll as () => Promise<unknown>,
-    render:  (p) => (
+    id:         'kardex',
+    path:       '/kardex',
+    label:      'Kardex',
+    icon:       <ReceiptLongIcon fontSize="small" />,
+    permisoKey: 'CORE|KARDEX',
+    fetcher:    getKardexAll as () => Promise<unknown>,
+    render:     (p, _permisos) => (
       <Suspense fallback={<ListSkeleton rows={8} cols={9} />}>
         <Kardex getKardex={p as Promise<IKardex[]>} />
       </Suspense>
     ),
   },
   {
-    id:      'ajuste',
-    path:    '/ajuste',
-    label:   'Ajuste',
-    icon:    <TuneIcon fontSize="small" />,
-    fetcher: getAjusteAll as () => Promise<unknown>,
-    render:  (p) => (
+    id:         'ajuste',
+    path:       '/ajuste',
+    label:      'Ajuste',
+    icon:       <TuneIcon fontSize="small" />,
+    permisoKey: 'CORE|AJUSTE',
+    fetcher:    getAjusteAll as () => Promise<unknown>,
+    render:     (p, permisos) => (
       <Suspense fallback={<ListSkeleton rows={6} cols={4} />}>
-        <Ajustes getAjuste={p as Promise<IAjuste[]>} permisos={{ agregar: true, editar: true }} />
+        <Ajustes getAjuste={p as Promise<IAjuste[]>} permisos={{ agregar: permisos.agregar ?? false, editar: permisos.editar ?? false }} />
       </Suspense>
     ),
   },

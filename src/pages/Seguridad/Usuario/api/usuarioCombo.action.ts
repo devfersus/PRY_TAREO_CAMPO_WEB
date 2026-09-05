@@ -20,3 +20,24 @@ export const getUsuariosCombo = async (search: string): Promise<ComboItem[]> => 
         return [];
     }
 };
+
+interface UsuarioListarRaw {
+    id              : string;
+    nombre          : string;
+    apellidoPaterno : string;
+    apellidoMaterno : string;
+}
+
+// Combo que devuelve el GUID como código (para asignación de permisos)
+export const getUsuariosComboConId = async (): Promise<ComboItem[]> => {
+    try {
+        const res = await usuarioApi.get('/');
+        return (res.data as UsuarioListarRaw[]).map((u) => ({
+            codigo     : u.id,
+            descripcion: `${u.nombre} ${u.apellidoPaterno} ${u.apellidoMaterno}`.trim(),
+        }));
+    } catch (error) {
+        console.error('Error al obtener combo de usuarios:', error);
+        return [];
+    }
+};

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Drawer from '@mui/material/Drawer';
@@ -15,9 +16,10 @@ import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-import { seguridadRoutes, type SeguridadRoute } from '../../../shared/routes/seguridad.routes';
+import { seguridadRoutes, type SeguridadRoute, type RoutePermisos } from '../../../shared/routes/seguridad.routes';
 import { maestroRoutes } from '../../../shared/routes/maestro.routes';
 import { coreRoutes } from '../../../shared/routes/core.routes';
+import { usePermisos } from '../../../shared/context/PermisosContext';
 
 const DRAWER_WIDTH = 220;
 const APPBAR_HEIGHT = 64;
@@ -33,17 +35,20 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
   const [promises, setPromises] = useState<Map<string, Promise<unknown>>>(new Map());
   const fetchedIds = useRef(new Set<string>());
 
+  const { tienePermiso, cargando } = usePermisos();
+
   const allRoutes = [...seguridadRoutes, ...maestroRoutes, ...coreRoutes];
   const activeRoute = allRoutes.find((r) => r.path === location.pathname) ?? null;
 
-  // Cargar datos al navegar directamente por URL
+  // Cargar datos al navegar directamente por URL (solo si tiene permiso)
   useEffect(() => {
-    if (activeRoute && !fetchedIds.current.has(activeRoute.id)) {
+    if (cargando) return;
+    if (activeRoute && tienePermiso(`${activeRoute.permisoKey}|LISTAR`) && !fetchedIds.current.has(activeRoute.id)) {
       fetchedIds.current.add(activeRoute.id);
       setPromises((prev) => new Map(prev).set(activeRoute.id, activeRoute.fetcher()));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeRoute?.id]);
+  }, [activeRoute?.id, cargando]);
 
   const handleSelect = (route: SeguridadRoute) => {
     navigate(route.path);
@@ -57,6 +62,19 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
   if (location.pathname === '/') return <Navigate to="/modulo" replace />;
 
   const activePromise = activeRoute ? promises.get(activeRoute.id) : undefined;
+
+  // Permisos reales para la ruta activa
+  const activePermisos: RoutePermisos = activeRoute
+    ? {
+        agregar:  tienePermiso(`${activeRoute.permisoKey}|REGISTRAR`),
+        editar:   tienePermiso(`${activeRoute.permisoKey}|EDITAR`),
+        eliminar: tienePermiso(`${activeRoute.permisoKey}|ELIMINAR`),
+      }
+    : {};
+
+  // Filtrar rutas visibles: mientras carga se muestran todas para evitar parpadeo
+  const puedeVer = (route: SeguridadRoute) =>
+    cargando || tienePermiso(`${route.permisoKey}|LISTAR`);
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -103,54 +121,58 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
           { label: 'Seguridad', routes: seguridadRoutes },
           { label: 'Maestro',   routes: maestroRoutes   },
           { label: 'Core',      routes: coreRoutes      },
-        ].map((group, gi) => (
-          <Box key={group.label}>
-            {gi > 0 && <Divider />}
-            <Box
-              sx={{
-                px: 2,
-                py: 1.5,
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-              }}
-            >
-              {group.label}
-            </Box>
-            <Divider />
-            <List dense disablePadding>
-              {group.routes.map((route) => (
-                <ListItemButton
-                  key={route.id}
-                  selected={activeRoute?.id === route.id}
-                  onClick={() => handleSelect(route)}
-                  sx={{
-                    borderLeft: '3px solid',
-                    borderColor: activeRoute?.id === route.id ? 'primary.main' : 'transparent',
-                    '&.Mui-selected': {
-                      bgcolor: 'primary.50',
-                      color: 'primary.main',
-                      '& .MuiListItemIcon-root': { color: 'primary.main' },
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36 }}>{route.icon}</ListItemIcon>
-                  <ListItemText
-                    primary={route.label}
-                    slotProps={{
-                      primary: {
-                        variant: 'body2',
-                        fontWeight: activeRoute?.id === route.id ? 600 : 400,
+        ].map((group, gi) => {
+          const rutasVisibles = group.routes.filter(puedeVer);
+          if (rutasVisibles.length === 0) return null;
+          return (
+            <Box key={group.label}>
+              {gi > 0 && <Divider />}
+              <Box
+                sx={{
+                  px: 2,
+                  py: 1.5,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: 'text.secondary',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                {group.label}
+              </Box>
+              <Divider />
+              <List dense disablePadding>
+                {rutasVisibles.map((route) => (
+                  <ListItemButton
+                    key={route.id}
+                    selected={activeRoute?.id === route.id}
+                    onClick={() => handleSelect(route)}
+                    sx={{
+                      borderLeft: '3px solid',
+                      borderColor: activeRoute?.id === route.id ? 'primary.main' : 'transparent',
+                      '&.Mui-selected': {
+                        bgcolor: 'primary.50',
+                        color: 'primary.main',
+                        '& .MuiListItemIcon-root': { color: 'primary.main' },
                       },
                     }}
-                  />
-                </ListItemButton>
-              ))}
-            </List>
-          </Box>
-        ))}
+                  >
+                    <ListItemIcon sx={{ minWidth: 36 }}>{route.icon}</ListItemIcon>
+                    <ListItemText
+                      primary={route.label}
+                      slotProps={{
+                        primary: {
+                          variant: 'body2',
+                          fontWeight: activeRoute?.id === route.id ? 600 : 400,
+                        },
+                      }}
+                    />
+                  </ListItemButton>
+                ))}
+              </List>
+            </Box>
+          );
+        })}
       </Drawer>
 
       {/* Contenido principal */}
@@ -172,7 +194,11 @@ export default function DrawerDemo({ onLogout }: DrawerDemoProps) {
           </Typography>
         )}
 
-        {activeRoute && activePromise && activeRoute.render(activePromise)}
+        {activeRoute && activePromise && (
+          !cargando && !puedeVer(activeRoute)
+            ? <Alert severity="error">No tienes permiso para acceder a esta sección.</Alert>
+            : activeRoute.render(activePromise, activePermisos)
+        )}
       </Box>
 
     </Box>

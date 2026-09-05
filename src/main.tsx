@@ -7,6 +7,7 @@ import { theme } from './shared/theme/theme'
 import DrawerDemo from './pages/main/drawer_demo/DrawerDemo.tsx'
 import { ErrorBoundary } from './shared/ErrorBoundary.tsx'
 import { LoginPage } from './pages/Seguridad/Auth/Pages/LoginPage.tsx'
+import { PermisosProvider } from './shared/context/PermisosContext.tsx'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
@@ -33,7 +34,7 @@ function App() {
           path="/*"
           element={
             isAuthenticated
-              ? <DrawerDemo onLogout={handleLogout} />
+              ? <PermisosProvider><DrawerDemo onLogout={handleLogout} /></PermisosProvider>
               : <Navigate to="/login" replace />
           }
         />
