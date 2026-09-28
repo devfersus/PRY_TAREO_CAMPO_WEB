@@ -2,7 +2,6 @@ import type { FC } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
@@ -38,7 +37,6 @@ const Permisos: FC<Props> = ({ getPermiso, permisos }) => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 2 }}>PERMISO</Typography>
       <Divider sx={{ mb: 2 }} />
 
       {/* ── Toolbar ── */}

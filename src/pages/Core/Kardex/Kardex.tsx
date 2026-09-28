@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { useCallback, useRef } from 'react';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -36,7 +35,6 @@ const Kardex: FC<Props> = ({ getKardex }) => {
 
     return (
         <>
-            <Typography variant="h5" sx={{ mb: 2 }}>KARDEX</Typography>
             <Divider sx={{ mb: 2 }} />
 
             {/* Filtro por producto + almacén */}

@@ -2,7 +2,6 @@ import type { FC } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
@@ -27,7 +26,6 @@ const Productos: FC<Props> = ({ getProducto, permisos }) => {
 
   return (
     <>
-      <Typography variant="h5" sx={{ mb: 2 }}>PRODUCTO</Typography>
       <Divider sx={{ mb: 2 }} />
 
       {permisos.agregar && (

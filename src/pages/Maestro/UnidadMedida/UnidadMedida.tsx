@@ -27,7 +27,6 @@ const UnidadesMedida: FC<Props> = ({ getUnidadMedida, permisos }) => {
 
     return (
         <>
-            <Typography variant="h5" sx={{ mb: 2 }}>UNIDAD DE MEDIDA</Typography>
             <Divider sx={{ mb: 2 }} />
 
             {permisos.agregar && (
